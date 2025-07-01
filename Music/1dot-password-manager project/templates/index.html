@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto text-center">
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Secure Password Management</h2>
+        <p class="text-gray-600 mb-8">Keep your passwords safe with military-grade encryption</p>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-6 rounded-lg">
+                <i data-lucide="shield-check" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Secure Encryption</h3>
+                <p class="text-gray-600">Your passwords are encrypted with Fernet symmetric encryption</p>
+            </div>
+            <div class="bg-green-50 p-6 rounded-lg">
+                <i data-lucide="key" class="w-12 h-12 text-green-600 mx-auto mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">Password Generator</h3>
+                <p class="text-gray-600">Generate strong, unique passwords for all your accounts</p>
+            </div>
+        </div>
+        
+        <div class="space-x-4">
+            <a href="{{ url_for('register') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 inline-block">Get Started</a>
+            <a href="{{ url_for('login') }}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 inline-block">Login</a>
+        </div>
+    </div>
+
+    <!-- Password Strength Checker Demo -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">Try Our Password Strength Checker</h3>
+        <div class="max-w-md mx-auto">
+            <input type="password" id="demo-password" placeholder="Enter a password to test..." 
+                   class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            
+            <div id="strength-display" class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium">Strength:</span>
+                    <span id="strength-text" class="text-sm font-medium">-</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="strength-bar" class="strength-meter h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div id="feedback" class="text-sm text-gray-600"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('demo-password').addEventListener('input', async function() {
+    const password = this.value;
+    if (!password) {
+        document.getElementById('strength-text').textContent = '-';
+        document.getElementById('strength-bar').style.width = '0%';
+        document.getElementById('strength-bar').className = 'strength-meter h-2 rounded-full';
+        document.getElementById('feedback').innerHTML = '';
+        return;
+    }
+    
+    try {
+        const response = await fetch('/check_strength', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password: password })
+        });
+        
+        const result = await response.json();
+        const percentage = (result.score / result.max_score) * 100;
+        
+        document.getElementById('strength-text').textContent = result.strength;
+        document.getElementById('strength-bar').style.width = percentage + '%';
+        
+        let colorClass = 'bg-red-500';
+        if (result.color === 'yellow') colorClass = 'bg-yellow-500';
+        if (result.color === 'green') colorClass = 'bg-green-500';
+        
+        document.getElementById('strength-bar').className = `strength-meter h-2 rounded-full ${colorClass}`;
+        
+        if (result.feedback.length > 0) {
+            document.getElementById('feedback').innerHTML = 
+                '<strong>Suggestions:</strong><br>' + result.feedback.join('<br>');
+        } else {
+            document.getElementById('feedback').innerHTML = '<strong class="text-green-600">Great password!</strong>';
+        }
+    } catch (error) {
+        console.error('Error checking password strength:', error);
+    }
+});
+</script>
+{% endblock %}
