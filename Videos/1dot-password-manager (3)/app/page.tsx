@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Shield, Key, Eye, EyeOff } from "lucide-react"
 import { checkPasswordStrength } from "@/lib/password-strength"
+import { PasswordTips } from "@/components/password-tips"
 
 export default function HomePage() {
   const [demoPassword, setDemoPassword] = useState("")
@@ -119,6 +120,31 @@ export default function HomePage() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Password Security Tips */}
+          <PasswordTips />
+
+          {/* Call to Action */}
+          <div className="mt-8 text-center">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
+              <h4 className="text-xl font-bold mb-2">Ready to Secure Your Digital Life?</h4>
+              <p className="mb-4">Start using 1Dot Password Manager to generate and store strong, unique passwords</p>
+              <div className="space-x-4">
+                <Link
+                  href="/register"
+                  className="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 inline-block font-semibold"
+                >
+                  Create Free Account
+                </Link>
+                <Link
+                  href="/login"
+                  className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-600 inline-block font-semibold"
+                >
+                  Sign In
+                </Link>
+              </div>
             </div>
           </div>
         </div>
